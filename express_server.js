@@ -70,6 +70,12 @@ let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
+// Delete a URL and then redirect to /urls...
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+})
 
 function generateRandomString() {
   let randomString = Math.random().toString(36).substring(7);
