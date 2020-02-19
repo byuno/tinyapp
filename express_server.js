@@ -77,6 +77,20 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 })
 
+//Navigate to the URL edit page from landing page (Edit button functionaliy)...
+app.get("/urls", (req, res) => {
+  let shortURL = req.params.shortURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
+//Update the long URL to match with an existing short URL...
+app.post("/urls/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL;
+  let longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+res.redirect("/urls")
+})
+
 function generateRandomString() {
   let randomString = Math.random().toString(36).substring(7);
   return randomString;
