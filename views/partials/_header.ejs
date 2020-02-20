@@ -13,10 +13,13 @@
       </div>
     </div>
 
-    <% if(username){ %>
-    <!-- Log out form and add username next to the form -->
+    <!-- change true back to id later -->
+    <% if(id){ %>
+    <!-- Log out form and add id next to the form -->
 
-    <div class="mr-2" > Logged in as: <%= username %></div>
+   <!-- <div class="mr-2"> Logged in as: <%= id['id'] %></div> --> 
+    <div class="mr-2"> Logged in as: <%= id.email %></div>
+      <%# JSON.stringify(id)%>
 
     <form class="form-inline" action="/logout" method="POST">
       <div class="form-group mb-2">
@@ -25,14 +28,26 @@
     </form>
 
     <% } else { %>
-    <!-- Username login form -->
-    <form class="form-inline" action="/login" method="POST">
-      <div class="form-group mb-2">
-        <input class="form-control" type="text" name="username" placeholder="Username" id="username"
-          style="width: 300px; margin: 1em">
-        <button type="submit" class="btn btn-primary">Login</button>
-      </div>
+    <!-- id login form -->
+    <!-- 
+  
+     <form class="form-inline" action="/register" method="GET">
+       <div class="form-group mb-2">
+         <input class="form-control" type="register" name="id" placeholder="id" id="id"
+           style="width: 300px; margin: 1em">
+         <button type="submit" class="btn btn-primary">Login</button>
+       </div>
+     </form>
+-->
+
+
+    <form>
+      <a href="/register">Register Page</a>
+      <a href="/login">Login Page</a>
     </form>
+
+
+
     <% } %>
   </nav>
 </header>
