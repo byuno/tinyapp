@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 
 //Added cookeiParser
 const app = express();
@@ -116,7 +117,7 @@ app.get("/u/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL]['dblongURL'],
     urls: urlDatabase 
   };
-  
+
   res.redirect(urlDatabase[req.params.shortURL]['dblongURL']); // the longurl
 });
 
@@ -157,8 +158,8 @@ app.post("/login", (req, res) => {
   //console.log("req.body", req.body);
   //should match email and pw from request to the correct user on our database
   for (const key in users) {
-    // console.log(users[key], "postlogin for loop");
-    if (users[key]['email'] === req.body['email'] && users[key]['password'] === req.body['password']) {
+    console.log("postlogin for loop", req.body.password, "===", users[key]['password']);
+    if (users[key]['email'] === req.body['email'] && bcrypt.compareSync(req.body.password, users[key]['password'])) {
       //console.log("postlogin loop, 'if' is hit", req.body['email'])
       res.cookie("user_id", users[key]["id"]);
       res.redirect("/urls");
@@ -201,8 +202,13 @@ app.post("/register", (req, res) => {
   if (matchEmail(req) === true){
     return res.status(400).send("Status 400: matching email");
   };
-
-  users[randomUserID] = { id: randomUserID, email: req.body.email, password: req.body.password };
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
+  users[randomUserID] = {
+    id: randomUserID,
+    email: req.body.email,
+    password: hashedPassword
+  };
+  console.log("/register", users[randomUserID] );
   res.cookie("user_id", randomUserID);
   res.redirect("/urls");
 
