@@ -5,7 +5,7 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 !["Screenshot of the create URL page"](https://github.com/byuno/tinyapp/blob/master/docs/Create-URLs.png)
-!["Screenshot displaying the URLs"](#https://github.com/byuno/tinyapp/blob/master/docs/Display-URLs.png)
+!["Screenshot displaying the URLs"](https://github.com/byuno/tinyapp/blob/master/docs/Display-URLs.png)
 !["Screenshot of the edit URL page"](https://github.com/byuno/tinyapp/blob/master/docs/Edit-URLs.png)
 !["Screenshot of the logout page"](https://github.com/byuno/tinyapp/blob/master/docs/Logout.png)
 
