@@ -24,7 +24,7 @@ describe('matchEmail', function() {
     assert.equal(user, expectedOutput,'these should be the same');
   });
 
-  it('should return true if the email in the request and in the db are different', function() {
+  it('should return false if the email in the request and in the db are different', function() {
     const req = {body: {email: "different@email.com"}};
     const user = matchEmail(req, testUsers)
     const expectedOutput = false;

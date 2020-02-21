@@ -4,8 +4,6 @@ const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 const bodyParser = require("body-parser");
 const {matchEmail} = require("./helpers");
-//const getUser = require("./helpers");
-//const urlsForUser = require("./helpers");
 
 //Added cookeiParser
 const app = express();
@@ -46,19 +44,6 @@ function generateRandomString() {
   let randomString = Math.random().toString(36).substring(7);
   return randomString;
 }
-
-//Return true if there is matching emails.
-// function 
-//matchEmail(req)
-
-//  {
-//   for (const user in users) {
-//     if (users[user]['email'] === req.body.email) {
-//       return true;
-//     }
-//   }
-//   return false;
-// }
 
 //To keep things DRY. Gets user name (replace req.cookies["id"] )...
 function getUser(req) 
