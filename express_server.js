@@ -12,10 +12,10 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs")
 
-
+// DB = { shortURL: longURL}
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {dblongURL: "http://www.lighthouselabs.ca", userID: "aJ48lW"},
+  "9sm5xK": {dblongURL: "http://www.google.com", userID: "aJ48lW"}
 };
 
 //Creating user object...
@@ -63,40 +63,72 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { id: getUser(req), urls: urlDatabase };
+  let templateVars = {
+    id: getUser(req),
+    urls: urlsForUser(req.cookies['user_id']) 
+  };
+  // if(req.cookies["user_id"] === undefined){
+  //   //res.redirect("/login")
+  //   //res.send("Please login or regisert.")
+  // }
+
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   let templateVars = { id: getUser(req) };
+  //console.log("req.cookies[user_id]", req.cookies["user_id"]);
+  //console.log("document.cookies", document.cookies);
+  if(req.cookies["user_id"] === undefined){
+    res.redirect("/login");
+  }
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  console.log('req', req )
-  let templateVars = { id: getUser(req), shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]/* What goes here? */ };
+  //console.log('req', req )
+  let templateVars = { id: getUser(req), 
+                      shortURL: req.params.shortURL, 
+                      longURL: urlDatabase[req.params.shortURL]['dblongURL'],
+                      urls: urlDatabase 
+                    };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
+  //console.log(req.body);  // Log the POST request body to the console
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body['longURL'];
+  urlDatabase[shortURL] = {
+    dblongURL: req.body['longURL'],
+    userID: req.cookies["user_id"]//"test"
+  };
   console.log(urlDatabase)
-  res.redirect(`/urls/${shortURL}`);
+res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-
-  res.redirect(longURL);
+  //let longURL = urlDatabase[req.params.shortURL];
+  //let templateVars = { id: getUser(req).id };
+  //res.redirect(longURL);
+  let templateVars = { id: getUser(req), 
+    shortURL: req.params.shortURL, 
+    longURL: urlDatabase[req.params.shortURL]['dblongURL'],
+    urls: urlDatabase 
+  };
+  res.redirect(urlDatabase[req.params.shortURL]['dblongURL']); // the longurl
 });
 
 // Delete a URL and then redirect to /urls...
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  if(req.cookies["user_id"] === urlDatabase[req.params.shortURL]['userID']){
+    let shortURL = req.params.shortURL;
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+
+  }
+  else{
+    res.send("You are not allowed to perform this action");
+  }
 })
 
 //Navigate to the URL edit page from landing page (Edit button functionaliy)...
@@ -107,20 +139,25 @@ app.get("/urls", (req, res) => {
 
 //Update the long URL to match with an existing short URL...
 app.post("/urls/:shortURL", (req, res) => {
-  let shortURL = req.params.shortURL;
-  let longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
-  res.redirect("/urls")
+  if(req.cookies["user_id"] === urlDatabase[req.params.shortURL]['userID']){
+    let shortURL = req.params.shortURL;
+    let longURL = req.body.longURL;
+    urlDatabase[shortURL]['dblongURL'] = longURL;
+    res.redirect("/urls")
+  }
+  else{
+    res.send("You are not allowed to perform this action");
+  }
 })
 
 //Assign the entered id to cookie "name"...
 app.post("/login", (req, res) => {
-  console.log("req.body", req.body);
+  //console.log("req.body", req.body);
   //should match email and pw from request to the correct user on our database
   for (const key in users) {
     // console.log(users[key], "postlogin for loop");
     if (users[key]['email'] === req.body['email'] && users[key]['password'] === req.body['password']) {
-      console.log("postlogin loop, 'if' is hit", req.body['email'])
+      //console.log("postlogin loop, 'if' is hit", req.body['email'])
       res.cookie("user_id", users[key]["id"]);
       res.redirect("/urls");
     }
@@ -196,5 +233,23 @@ app.get("/login", (req, res) => {
   let templateVars = { id: '', email: '', password: '' };
   res.render("urls_login", templateVars);
 })
+
+//gets the current user (id = cookie)
+function urlsForUser(id) {
+  // if(req.cookies["user_id"] === urlDatabase[req.body.shortURL]['userID']){
+  let results = {};
+  for (const key in urlDatabase) {
+    if (id === urlDatabase[key]['userID']) {
+      results[key] = urlDatabase[key];
+      //return urlDatabase.map(pick('userID'));
+
+    }
+  }
+  //console.log("inside the function")
+  return results;
+};
+
+//urlsForUser('aJ48lW');
+//console.log('hello');
 
 
